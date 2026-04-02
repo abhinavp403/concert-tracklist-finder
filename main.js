@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, shell, dialog, clipboard } = require('electron');
 const path = require('path');
 const fs = require('fs');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const { execFile } = require('child_process');
 const { fetchComments, fetchVideoMetadata } = require('./src/services/youtube');
 const { findTracklists, scoreComment, parseTrackEntries } = require('./src/services/tracklistParser');
@@ -32,7 +33,7 @@ function createWindow() {
   }
 }
 
-const API_KEY = 'AIzaSyAU4yOAAu77RZnKBc_9HeddkohK_ZxuvOg';
+const API_KEY = process.env.YOUTUBE_API_KEY;
 
 // Opens a URL in the system browser's incognito/private mode.
 // Tries Chrome → Edge → Firefox in order; falls back to shell.openExternal.
