@@ -3,12 +3,12 @@ import { initializeAuth, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBUJ5ilAiCFQBrx4RXuHyuKPlyS3AogfaQ",
-  authDomain: "concert-tracklist-finder.firebaseapp.com",
-  projectId: "concert-tracklist-finder",
-  storageBucket: "concert-tracklist-finder.firebasestorage.app",
-  messagingSenderId: "651397772458",
-  appId: "1:651397772458:web:5fa2c846ca191c9e12ccd3",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
