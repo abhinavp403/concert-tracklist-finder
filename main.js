@@ -6,8 +6,11 @@ const { execFile } = require('child_process');
 const { fetchComments, fetchVideoMetadata } = require('./src/services/youtube');
 const { findTracklists, scoreComment, parseTrackEntries } = require('./src/services/tracklistParser');
 const HistoryStore = require('./src/services/historyStore');
+const Store = require('electron-store').default;
 
-const isDev = !app.isPackaged;
+const authStore = new Store({ name: 'firebase-auth' });
+
+const isDev = !app.isPackaged && process.env.FORCE_PROD !== '1';
 
 let historyStore = null;
 
@@ -110,6 +113,22 @@ ipcMain.handle('load-history', () => historyStore?.read() ?? []);
 ipcMain.handle('save-to-history', (_event, entry) => historyStore?.add(entry) ?? []);
 ipcMain.handle('delete-history-item', (_event, id) => historyStore?.remove(id) ?? []);
 ipcMain.handle('toggle-favorite', (_event, id) => historyStore?.toggleFavorite(id) ?? []);
+
+// IPC handlers: Firebase auth persistence (stored in userData/firebase-auth.json)
+ipcMain.handle('auth-store-get', (_event, key) => authStore.get(key, null));
+ipcMain.handle('auth-store-set', (_event, key, value) => { authStore.set(key, value); });
+ipcMain.handle('auth-store-delete', (_event, key) => { authStore.delete(key); });
+
+// Synchronous handler used by preload.js to restore Firebase localStorage before page load
+ipcMain.on('auth-get-localStorage-sync', (event) => {
+  event.returnValue = authStore.get('localStorage', {});
+});
+ipcMain.handle('auth-save-localStorage', (_event, entries) => {
+  authStore.set('localStorage', entries);
+});
+ipcMain.handle('auth-clear-localStorage', () => {
+  authStore.delete('localStorage');
+});
 
 // IPC handler: open a URL in a reusable YouTube window
 let youtubeWindow = null;

@@ -13,7 +13,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// browserLocalPersistence keeps the user signed in across app restarts
 export const auth = initializeAuth(app, {
   persistence: browserLocalPersistence,
 });

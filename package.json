@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && electron .\"",
     "build": "vite build",
-    "start": "vite build && electron ."
+    "start": "vite build && FORCE_PROD=1 electron ."
   },
   "keywords": [],
   "author": "",
@@ -16,6 +16,7 @@
     "dotenv": "^17.4.0",
     "electron": "^41.0.3",
     "electron-is-dev": "^3.0.1",
+    "electron-store": "^11.0.2",
     "firebase": "^12.11.0"
   },
   "devDependencies": {

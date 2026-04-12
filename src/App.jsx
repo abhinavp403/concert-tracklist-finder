@@ -40,6 +40,15 @@ export default function App() {
   // Listen for Firebase auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        // Back up Firebase's localStorage auth entry to electron-store so preload.js
+        // can restore it before Firebase initializes on the next app launch.
+        const firebaseKey = `firebase:authUser:${import.meta.env.VITE_FIREBASE_API_KEY}:[DEFAULT]`;
+        const value = localStorage.getItem(firebaseKey);
+        if (value) window.electronAPI.authSaveLocalStorage({ [firebaseKey]: value });
+      } else {
+        window.electronAPI.authClearLocalStorage();
+      }
       setUser(firebaseUser ?? false);
     });
     return unsubscribe;
