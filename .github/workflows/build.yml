@@ -3,6 +3,8 @@ name: Build Desktop Apps
 on:
   workflow_dispatch:
   push:
+    branches:
+      - master
     tags:
       - 'v*'
 
