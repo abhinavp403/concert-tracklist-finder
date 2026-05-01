@@ -1,10 +1,23 @@
 # 🎵 Concert Tracklist Finder
 
-A desktop app that finds tracklists for YouTube concert and DJ set videos by scanning and scoring comments using a heuristic parser.
+A desktop app that finds tracklists for YouTube concert and DJ set videos by scanning and scoring comments (and the video description) using a heuristic parser.
 
-Built with **Electron + React + Vite**.
+Built with **Electron + React + Vite**, with **Firebase** for auth and cloud sync.
 
 ---
+
+## Features
+
+- 🔍 **Smart tracklist detection** — scans up to ~1,000 comments plus the video description, scores each by timestamps, numbered lines, keywords, and likes
+- 🕐 **Clickable timestamps** — jump to any track directly in YouTube
+- 🎵 **Per-track search** — search any track on Spotify or SoundCloud in one click
+- 📤 **Export** — copy to clipboard or save as `.txt`, `.csv`, or `.json`
+- 📂 **Search history** — keeps your 50 most recent searches with thumbnails and timestamps
+- ⭐ **Favorites** — star searches to pin them to the top of history
+- 🔗 **Source link** — jump to the original comment thread on YouTube
+- 🔎 **Author search** — if no tracklist is found, search by the commenter's username
+- 🌗 **Dark / light mode** — persisted across sessions
+- 👤 **Account sync** — sign in with email to sync history across devices via Firebase; or continue as a guest with local-only storage
 
 ## Prerequisites
 
@@ -20,16 +33,9 @@ npm install
 npm run dev
 ```
 
-## Usage
-
-1. Enter your YouTube Data API key when prompted (saved locally)
-2. Paste a YouTube concert or DJ set URL
-3. Click **Find Tracklist**
-4. The app fetches up to ~1,000 comments and surfaces the top 5 tracklist candidates
-
 ## How It Works
 
-Comments are scored using a weighted heuristic:
+The app checks the video description first, then fetches up to ~1,000 comments (10 pages × 100, ordered by relevance). Each candidate is scored with a weighted heuristic:
 
 | Signal | Weight |
 |---|---|
@@ -39,7 +45,7 @@ Comments are scored using a weighted heuristic:
 | Comment likes | capped at 50 |
 | Line count | capped at 40 |
 
-Only comments with a score > 0 and at least 2 parsed tracks are returned.
+Only results with a score > 0 and at least 2 parsed tracks are returned (up to 5).
 
 ## Scripts
 
@@ -55,15 +61,20 @@ Only comments with a score > 0 and at least 2 parsed tracks are returned.
 
 ```
 concert-tracklist-finder/
-├── main.js                          # Electron main process + IPC handlers
-├── preload.js                       # Secure context bridge (renderer ↔ main)
+├── main.js                            # Electron main process + IPC handlers
+├── preload.js                         # Secure context bridge (renderer ↔ main)
 ├── src/
-│   ├── App.jsx                      # Root React component
+│   ├── App.jsx                        # Root React component, auth + history state
 │   ├── components/
-│   │   ├── SearchBar.jsx            # URL input + submit button
-│   │   └── TracklistResults.jsx     # Expandable tracklist display
+│   │   ├── AuthScreen.jsx             # Sign in / create account / guest screen
+│   │   ├── HistoryPanel.jsx           # Recent searches with favorites
+│   │   ├── SearchBar.jsx              # URL input + submit button
+│   │   └── TracklistResults.jsx       # Expandable results, export, timestamp links
 │   └── services/
-│       ├── youtube.js               # YouTube Data API comment fetcher
-│       └── tracklistParser.js       # Tracklist detection heuristic
+│       ├── youtube.js                 # YouTube Data API comment + metadata fetcher
+│       ├── tracklistParser.js         # Tracklist detection heuristic
+│       ├── firebase.js                # Firebase app init
+│       ├── cloudHistory.js            # Firestore history read/write/migrate
+│       └── historyStore.js            # Local (electron-store) history fallback
 └── vite.config.js
 ```
